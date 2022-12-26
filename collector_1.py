@@ -31,7 +31,7 @@ session_data = {
     "unit_id" : unit_id,
     "start_time" : st,
     "is_autoinitiated" : 1,
-    "session_name" : "Initial test session"
+    "session_name" : ""
 }
 
 
@@ -59,29 +59,32 @@ for loopcnt in range(99):
 
     line = ser.readline()
     try:
-        torque_data = json.loads(line)
+        log_data = json.loads(line)
     except:
         print("JSON parse error")
-        torque_data = {
-            "torque":"nothing",
+        out_data = {
             "time" : 0
         }
     else:
         ts = time.time()
         st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+        out_data = {"session_id" : session_id,
+                    "log_time" : st,
+                    "machine_time" : log_data["time"] }
 
-        torque_log = {
-            "session_id" : session_id,
-            "log_time" : st,
-            "machine_time" : torque_data["time"],
-            "torque" : torque_data["torque"]
-        }
+        if("torque" in log_data):
+            out_data["torque"] = log_data["torque"]
 
-        machine_time_counter+=50
-        torque_data_str = json.dumps(torque_log)
+        if("state" in log_data):
+            out_data["state"] = log_data["state"]
+
+        if("input" in log_data):
+            out_data["input"] = log_data["input"]
+
+        out_data_str = json.dumps(out_data)
 
         url_string = url_host + torque_url_path + "?" + session_id_parameter
-        response_payload = requests.post(url_string, torque_data_str)
+        response_payload = requests.post(url_string, out_data_str)
 #        log_info = json.loads(response_payload.text)
 
 
