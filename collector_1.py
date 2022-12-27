@@ -8,11 +8,11 @@ unit_serial = "A"
 logger_id = "10.0.0.111"
 timestamp = time.localtime
 
-#url_host = "http://collector.rosness.no:8001/" 
-url_host = "http://localhost:8001/" 
+url_host = "http://collector.rosness.no:8001/" 
+#url_host = "http://localhost:8001/" 
 unit_url_path = "probaker/api/unit.php" 
 session_url_path = "probaker/api/session.php" 
-torque_url_path = "probaker/api/torque.php" 
+log_url_path = "probaker/api/log.php" 
 unit_serial_parameter = "unit_serial=" + unit_serial
 logger_id_parameter = "logger_id=" + logger_id
 
@@ -43,11 +43,6 @@ session_info = json.loads(response_payload.text)
 
 session_id = session_info["session_id"]
 session_id_parameter = "session_id=" + session_id
-
-
-
-#print(y["unit_id"])
-
 
 ser = serial.Serial('/dev/ttyUSB0', 921600 )
 ser.reset_input_buffer()
@@ -83,7 +78,7 @@ for loopcnt in range(99):
 
         out_data_str = json.dumps(out_data)
 
-        url_string = url_host + torque_url_path + "?" + session_id_parameter
+        url_string = url_host + log_url_path + "?" + session_id_parameter
         response_payload = requests.post(url_string, out_data_str)
 #        log_info = json.loads(response_payload.text)
 
